@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Installation page</title>
+</head>
+<body>
+<form>
+	<label for="apikey">Enter your API key</label>
+	<input type="text" name="apikey" id="apikey">
+	<label for="subdomain">Enter your subdomain</label>
+	<input type="text" name="subdomain" id="subdomain">
+</form>
+</body>
+<script>
+	function validate() {
+
+		// body...
+		var api_key = jQuery('#apikey').val();
+		var sub_domain = jQuery('#subdomain').val();
+		var btoaAPI = btoa(api_key);
+		if(api_key == ''){
+			alert('enter apikey');
+			return false;
+		}
+		else if(sub_domain == ''){
+			alert('enter subdomain');
+			return false;
+		}
+		else{
+			var url = 'https://'+sub_domain+'.freshdesk.com/api/v2/tickets'; //give the required url
+			var options = {
+				method: 'get',
+				header: {
+					'Content-Type': 'application/json',
+					'Authorization': 'Basic '+btoaAPI//api key here
+				}
+			};
+			mkp.request(url,options)
+			.done(function(success){
+				//Enter your code here
+				console.log('success data',success);
+				alert('success', success);
+				if(success.response != ''){
+					var parsedResponse = JSON.parse(success.response);
+					if(parsedResponse.code == 'invalid_credentials'){
+						alert('invalid_credentials');
+						return false;
+					}
+					else{
+						return true;					
+					}
+
+				}
+				else{
+					return true;
+				}
+			})
+			.fail(function(error){
+				//Enter you code here
+				console.log('error data',error);
+				alert('error data', error);
+				return false;
+			})
+		}
+	}
+
+	function postConfigs() {
+
+		// body...
+		var api_key = jQuery('#apikey').val();
+		var sub_domain = jQuery('#subdomain').val();
+		return {
+			apikey: api_key,
+			subdomain: sub_domain
+		}
+	}
+
+	function getConfigs(argument) {
+		console.log('getConfigs argument', argument);
+		var api_key = argument.apikey;
+		var sub_domain = argument.subdomain;
+		jQuery('#apikey').val(api_key);
+		jQuery('#subdomain').val(sub_domain);
+		// body...
+	}
+</script>
+</html>

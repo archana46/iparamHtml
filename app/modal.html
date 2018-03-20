@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+		<script src="https://static.freshdev.io/fdk/2.0/assets/fresh_client.js"></script>
+		<script
+  src="https://code.jquery.com/jquery-3.3.1.js"
+  integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+  crossorigin="anonymous"></script>
+  		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"></script>
+
+</head>
+<body>
+<form>
+  <label for="Reply">Reply</label>
+    <input id="reply_text" type="text" name="Reply">
+    <button id ="reply_button" type="submit" class="btn btn-success"> submit </button>
+</form>
+<script>
+	$(document).ready(function(){
+			app.initialized()
+				.then(function(_client){
+					var client=_client;
+					client.data.get('ticket')
+                    .then(function(ticketdata) {
+                        console.log('ticketdata',ticketdata);
+                        var ticketid= ticketdata.ticket.id;
+			    $('#reply_button').click(function(){
+			    	console.log('reply reply_button clicked');
+			    		var textreceived = $('#reply_text').val();
+	        		console.log('textreceived',textreceived);
+	        	client.iparams.get().then (
+			    function(iparamvalue) {
+			    	console.log('iparamvalue',iparamvalue);
+			    	var apikeyconverted = btoa(iparamvalue.apikey);
+			    	console.log('apikeyconverted',apikeyconverted);
+
+			    	var options = {
+			    		headers: {
+			    			"Authorization": "Basic " + apikeyconverted,
+			    			"content-type": "application/json"
+			    		},
+			    		body: JSON.stringify({
+			    			"body": textreceived
+			    		})
+			    	};
+			    	var url = 'https://'+iparamvalue.subdomain+'.freshdesk.com/api/v2/tickets/'+ticketid+'/reply';
+			    	console.log('url',url);
+			    	client.request.post(url,options)
+			    	.then(function(successreply){
+			    		console.log('successreply',successreply);
+			    	},
+			    	function(failurereply){
+			    		console.log('failurereply',failurereply);
+			    	}
+
+			    	)
+				})
+
+	})
+
+			    })
+			})
+			})
+
+
+</script>
+
+</body>
+</html>
